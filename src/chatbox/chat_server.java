@@ -5,11 +5,22 @@
  */
 package chatbox;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 /**
  *
  * @author wasif
  */
 public class chat_server extends javax.swing.JFrame {
+    
+    static ServerSocket server_socket;
+    static Socket socket;
+    static DataInputStream din;
+    static DataOutputStream dout;
+    
 
     /**
      * Creates new form chat_server
@@ -39,6 +50,11 @@ public class chat_server extends javax.swing.JFrame {
         jScrollPane1.setViewportView(msg_area);
 
         msg_send.setText("jButton1");
+        msg_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                msg_sendActionPerformed(evt);
+            }
+        });
 
         msg_text.setText("jTextField1");
 
@@ -73,9 +89,25 @@ public class chat_server extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void msg_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msg_sendActionPerformed
+        // TODO add your handling code here:
+        try{
+        String msgout="";
+        msgout=msg_text.getText().trim();
+        dout.writeUTF(msgout);
+        }catch(Exception e){
+        
+        
+        }
+    }//GEN-LAST:event_msg_sendActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    
+    private void msg_textActionPerformed(java.awt.event.ActionEvent event){
+    
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -106,6 +138,24 @@ public class chat_server extends javax.swing.JFrame {
                 new chat_server().setVisible(true);
             }
         });
+        
+        String msgin="";
+                
+                try{
+                
+                server_socket=new ServerSocket(1201);//ekhane 1201 porn number e server start hobe
+                socket=server_socket.accept();//server will accept the connections
+                din=new DataInputStream(socket.getInputStream());
+                dout=new DataOutputStream(socket.getOutputStream());
+               while(!msgin.equals("exit")){
+               msgin=din.readUTF();
+               msg_area.setText(msg_area.getText().trim()+"\n client:\t"+msgin);//displaying the message from client
+               }
+                
+                }catch(Exception e){
+                }
+        
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

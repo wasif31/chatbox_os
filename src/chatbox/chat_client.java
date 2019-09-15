@@ -5,6 +5,10 @@
  */
 package chatbox;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+
 /**
  *
  * @author wasif
@@ -14,6 +18,10 @@ public class chat_client extends javax.swing.JFrame {
     /**
      * Creates new form chat_client
      */
+    
+    static Socket socket;
+    static DataInputStream din;
+    static DataOutputStream dout;
     public chat_client() {
         initComponents();
     }
@@ -28,19 +36,24 @@ public class chat_client extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        text_area = new javax.swing.JTextArea();
+        msg_area = new javax.swing.JTextArea();
         msg_text = new javax.swing.JTextField();
         msg_send = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        text_area.setColumns(20);
-        text_area.setRows(5);
-        jScrollPane1.setViewportView(text_area);
+        msg_area.setColumns(20);
+        msg_area.setRows(5);
+        jScrollPane1.setViewportView(msg_area);
 
         msg_text.setText("jTextField1");
 
         msg_send.setText("jButton1");
+        msg_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                msg_sendActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -69,9 +82,19 @@ public class chat_client extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
+    private void msg_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msg_sendActionPerformed
+        // TODO add your handling code here:
+        try{
+        String msgout="";
+        msgout=msg_text.getText().trim();
+        dout.writeUTF(msgout);
+        }catch(Exception e){
+        
+        }
+    }//GEN-LAST:event_msg_sendActionPerformed
+private void msg_textActionPerformed(java.awt.event.ActionEvent event){
+    
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -102,12 +125,28 @@ public class chat_client extends javax.swing.JFrame {
                 new chat_client().setVisible(true);
             }
         });
-    }
+        try{
+            
+        socket=new Socket("127.0.0.1",1201);//same pc so ip adress given 
+        din=new DataInputStream(socket.getInputStream());
+        dout=new DataOutputStream(socket.getOutputStream());
+        String msgin="";
+        while(!msgin.equals("exit")){
+        msgin=din.readUTF();
+        msg_area.setText(msg_area.getText().trim() + "\n Server:\t" +msgin);
+        
+        
+        }
+                
+        }catch(Exception e){
+                    
+        }
 
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
+    private static javax.swing.JTextArea msg_area;
     private javax.swing.JButton msg_send;
     private javax.swing.JTextField msg_text;
-    private javax.swing.JTextArea text_area;
     // End of variables declaration//GEN-END:variables
 }
