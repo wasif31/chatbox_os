@@ -16,6 +16,8 @@ public class Chatbox {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+       // new chat_client().setVisible(true);
     }
     
 }

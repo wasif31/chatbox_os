@@ -7,8 +7,12 @@ package chatbox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,10 +20,10 @@ import java.net.Socket;
  */
 public class chat_server extends javax.swing.JFrame {
     
-    static ServerSocket server_socket;
-    static Socket socket;
-    static DataInputStream din;
-    static DataOutputStream dout;
+     ServerSocket server =null;
+     Socket client=null;
+     DataInputStream dis=null;
+     DataOutputStream dos=null;
     
 
     /**
@@ -39,24 +43,30 @@ public class chat_server extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        msg_area = new javax.swing.JTextArea();
-        msg_send = new javax.swing.JButton();
-        msg_text = new javax.swing.JTextField();
+        txt_recMsg = new javax.swing.JTextArea();
+        btn_send = new javax.swing.JButton();
+        txt_msg = new javax.swing.JTextField();
+        btn_strtserver = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        msg_area.setColumns(20);
-        msg_area.setRows(5);
-        jScrollPane1.setViewportView(msg_area);
+        txt_recMsg.setColumns(20);
+        txt_recMsg.setRows(5);
+        jScrollPane1.setViewportView(txt_recMsg);
 
-        msg_send.setText("jButton1");
-        msg_send.addActionListener(new java.awt.event.ActionListener() {
+        btn_send.setText("Send");
+        btn_send.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                msg_sendActionPerformed(evt);
+                btn_sendActionPerformed(evt);
             }
         });
 
-        msg_text.setText("jTextField1");
+        btn_strtserver.setText("Start Server");
+        btn_strtserver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_strtserverActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -67,39 +77,66 @@ public class chat_server extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(42, 42, 42)
+                        .addComponent(btn_strtserver, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(msg_text, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                        .addComponent(msg_send)
+                        .addComponent(txt_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+                        .addComponent(btn_send)
                         .addGap(46, 46, 46))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(btn_strtserver, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(msg_send)
-                    .addComponent(msg_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_send)
+                    .addComponent(txt_msg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void msg_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msg_sendActionPerformed
+    private void btn_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendActionPerformed
         // TODO add your handling code here:
         try{
-        String msgout="";
-        msgout=msg_text.getText().trim();
-        dout.writeUTF(msgout);
+       
+        String m=txt_msg.getText();
+        dos.writeUTF(m);
+        txt_recMsg.append("\n Me: "+m);
         }catch(Exception e){
         
         
         }
-    }//GEN-LAST:event_msg_sendActionPerformed
+    }//GEN-LAST:event_btn_sendActionPerformed
+
+    private void btn_strtserverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_strtserverActionPerformed
+        try {
+            // TODO add your handling code here:
+            
+            server=new ServerSocket(1201);//ekhane 1201 porn number e server start hobe
+             client=server.accept();//server will accept the connections
+             JOptionPane.showMessageDialog(null, "Client request Accepted");
+             dos=new DataOutputStream(client.getOutputStream());
+             dis=new DataInputStream(client.getInputStream());
+             ReceiveMessage serverThread= new ReceiveMessage(dis, txt_recMsg);
+             serverThread.setDaemon(true);
+             serverThread.start();
+             
+        } catch (IOException e) {
+             JOptionPane.showMessageDialog(null, "No client is Avaiilable");
+        }
+               
+    }//GEN-LAST:event_btn_strtserverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -109,59 +146,73 @@ public class chat_server extends javax.swing.JFrame {
     
     }
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new chat_server().setVisible(true);
-            }
-        });
         
-        String msgin="";
-                
-                try{
-                
-                server_socket=new ServerSocket(1201);//ekhane 1201 porn number e server start hobe
-                socket=server_socket.accept();//server will accept the connections
-                din=new DataInputStream(socket.getInputStream());
-                dout=new DataOutputStream(socket.getOutputStream());
-               while(!msgin.equals("exit")){
-               msgin=din.readUTF();
-               msg_area.setText(msg_area.getText().trim()+"\n client:\t"+msgin);//displaying the message from client
-               }
-                
-                }catch(Exception e){
+            /* Set the Nimbus look and feel */
+            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+            * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+            */
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
                 }
+            } catch (ClassNotFoundException ex) {
+                java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+                java.util.logging.Logger.getLogger(chat_server.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+            //</editor-fold>
+            
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    new chat_server().setVisible(true);
+                }
+            });
+            
+            
+            
+          
+            
+            
+            
+            
+            
+            //try {
+               // din=new DataInputStream(socket.getInputStream());
+            
+           // while(!msgin.equals("exit")){
+             //   msgin=din.readUTF();
+             //   msg_area.setText(msg_area.getText().trim()+"\n client:\t"+msgin);//displaying the message from client
+                
+                
+                
+                
+                
+           // }
+            
+            
+        //} catch (IOException ex) {
+          //  Logger.getLogger(chat_server.class.getName()).log(Level.SEVERE, null, ex);
+      //  }
+        //</editor-fold>
         
-        
-    }
+    
+        }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_send;
+    private javax.swing.JButton btn_strtserver;
     private javax.swing.JScrollPane jScrollPane1;
-    private static javax.swing.JTextArea msg_area;
-    private javax.swing.JButton msg_send;
-    private javax.swing.JTextField msg_text;
+    private javax.swing.JTextField txt_msg;
+    private static javax.swing.JTextArea txt_recMsg;
     // End of variables declaration//GEN-END:variables
 }

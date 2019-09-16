@@ -7,7 +7,12 @@ package chatbox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,10 +23,10 @@ public class chat_client extends javax.swing.JFrame {
     /**
      * Creates new form chat_client
      */
-    
-    static Socket socket;
-    static DataInputStream din;
-    static DataOutputStream dout;
+    Socket server=null;
+    // Socket socket=null;
+    DataInputStream dis=null;
+     DataOutputStream dos=null;
     public chat_client() {
         initComponents();
     }
@@ -36,22 +41,36 @@ public class chat_client extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        msg_area = new javax.swing.JTextArea();
-        msg_text = new javax.swing.JTextField();
-        msg_send = new javax.swing.JButton();
+        txt_recMsg = new javax.swing.JTextArea();
+        txt_msg = new javax.swing.JTextField();
+        btn_send = new javax.swing.JButton();
+        btn_connect = new javax.swing.JButton();
+        btn_receive = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        msg_area.setColumns(20);
-        msg_area.setRows(5);
-        jScrollPane1.setViewportView(msg_area);
+        txt_recMsg.setColumns(20);
+        txt_recMsg.setRows(5);
+        jScrollPane1.setViewportView(txt_recMsg);
 
-        msg_text.setText("jTextField1");
-
-        msg_send.setText("jButton1");
-        msg_send.addActionListener(new java.awt.event.ActionListener() {
+        btn_send.setText("Send");
+        btn_send.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                msg_sendActionPerformed(evt);
+                btn_sendActionPerformed(evt);
+            }
+        });
+
+        btn_connect.setText("Connect");
+        btn_connect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_connectActionPerformed(evt);
+            }
+        });
+
+        btn_receive.setText("Receive");
+        btn_receive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_receiveActionPerformed(evt);
             }
         });
 
@@ -63,35 +82,95 @@ public class chat_client extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(msg_text, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addComponent(msg_send, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
-                .addContainerGap())
+                    .addComponent(txt_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn_send, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btn_connect, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(btn_receive)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(btn_connect)
+                        .addGap(66, 66, 66)
+                        .addComponent(btn_receive)))
                 .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(msg_text, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(msg_send, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txt_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void msg_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msg_sendActionPerformed
+    private void btn_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendActionPerformed
         // TODO add your handling code here:
         try{
-        String msgout="";
-        msgout=msg_text.getText().trim();
-        dout.writeUTF(msgout);
+        
+        
+        dos.writeUTF(txt_msg.getText());
+        txt_recMsg.append("\n Me:"+txt_msg.getText());
         }catch(Exception e){
         
         }
-    }//GEN-LAST:event_msg_sendActionPerformed
+       // try{
+           // String msgout="";
+         //msgout=din.readUTF();
+//        msg_text.append(msgout);
+         //msg_text.setText(msg_text.getText()+msgout);
+        //}catch(IOException e){
+        
+        
+        
+       // }
+    }//GEN-LAST:event_btn_sendActionPerformed
+
+    private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
+        try {
+            // TODO add your handling code here:
+            server=new Socket("127.0.0.1",1201);//same pc so ip adress given 
+            JOptionPane.showMessageDialog(null, "Connected to server");
+            dis=new DataInputStream(server.getInputStream());
+            dos=new DataOutputStream(server.getOutputStream());
+            ReceiveMessage clientThread =new ReceiveMessage(dis,txt_recMsg);
+            clientThread.setDaemon(true);
+            clientThread.setName("Server");
+            clientThread.start();
+        
+        
+        } catch (UnknownHostException e) {
+            JOptionPane.showMessageDialog(null, "Cant connect");
+        }catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Cant connect");
+           
+        }
+    }//GEN-LAST:event_btn_connectActionPerformed
+
+    private void btn_receiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_receiveActionPerformed
+        try {
+            // TODO add your handling code here:
+
+            String msg=dis.readUTF();
+            txt_recMsg.append("\n"+msg);
+        } catch (IOException ex) {
+            Logger.getLogger(chat_client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+    }//GEN-LAST:event_btn_receiveActionPerformed
 private void msg_textActionPerformed(java.awt.event.ActionEvent event){
     
     }
@@ -125,28 +204,28 @@ private void msg_textActionPerformed(java.awt.event.ActionEvent event){
                 new chat_client().setVisible(true);
             }
         });
-        try{
-            
-        socket=new Socket("127.0.0.1",1201);//same pc so ip adress given 
-        din=new DataInputStream(socket.getInputStream());
-        dout=new DataOutputStream(socket.getOutputStream());
-        String msgin="";
-        while(!msgin.equals("exit")){
-        msgin=din.readUTF();
-        msg_area.setText(msg_area.getText().trim() + "\n Server:\t" +msgin);
+       // try{
+        
+       // dout=new DataOutputStream(socket.getOutputStream());
+       // String msgin="";
+       // while(!msgin.equals("exit")){
+        //msgin=din.readUTF();
+        //msg_area.setText(msg_area.getText().trim() + "\n Server:\t" +msgin);
         
         
-        }
+        //}
                 
-        }catch(Exception e){
+        //}catch(Exception e){
                     
-        }
+        //}
 
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_connect;
+    private javax.swing.JButton btn_receive;
+    private javax.swing.JButton btn_send;
     private javax.swing.JScrollPane jScrollPane1;
-    private static javax.swing.JTextArea msg_area;
-    private javax.swing.JButton msg_send;
-    private javax.swing.JTextField msg_text;
+    private javax.swing.JTextField txt_msg;
+    private static javax.swing.JTextArea txt_recMsg;
     // End of variables declaration//GEN-END:variables
 }
