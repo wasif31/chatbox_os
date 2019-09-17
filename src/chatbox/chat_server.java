@@ -31,6 +31,7 @@ public class chat_server extends javax.swing.JFrame {
      */
     public chat_server() {
         initComponents();
+        getRootPane().setDefaultButton(btn_send);
     }
 
     /**

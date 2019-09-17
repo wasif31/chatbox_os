@@ -26,6 +26,7 @@ public class ReceiveMessage extends Thread {
       
     }
     public void run(){
+     
      while(true){
          try {
              msg=dis.readUTF();

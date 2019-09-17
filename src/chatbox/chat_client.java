@@ -141,8 +141,12 @@ public class chat_client extends javax.swing.JFrame {
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
         try {
+            //Mainmenu mainmenu = new Mainmenu();
+           // String ip = mainmenu.getIp().toString();
+            //System.out.println();
             // TODO add your handling code here:
             server=new Socket("127.0.0.1",1201);//same pc so ip adress given 
+            System.out.println();
             JOptionPane.showMessageDialog(null, "Connected to server");
             dis=new DataInputStream(server.getInputStream());
             dos=new DataOutputStream(server.getOutputStream());

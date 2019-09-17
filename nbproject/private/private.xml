@@ -5,6 +5,9 @@
         <group>
             <file>file:/C:/Users/wasif/Documents/NetBeansProjects/chatbox/src/chatbox/Chatbox.java</file>
             <file>file:/C:/Users/wasif/Documents/NetBeansProjects/chatbox/src/chatbox/chat_server.java</file>
+            <file>file:/C:/Users/wasif/Documents/NetBeansProjects/chatbox/src/chatbox/Mainmenu.java</file>
+            <file>file:/C:/Users/wasif/Documents/NetBeansProjects/chatbox/src/chatbox/ReceiveMessage.java</file>
+            <file>file:/C:/Users/wasif/Documents/NetBeansProjects/chatbox/src/chatbox/Login.java</file>
             <file>file:/C:/Users/wasif/Documents/NetBeansProjects/chatbox/src/chatbox/chat_client.java</file>
         </group>
     </open-files>
